@@ -1,0 +1,493 @@
+/* ==========================================================================
+   Smilez Photography Kenya
+   Palette is sampled straight off smilez_photography IG post.jpg, then tuned
+   ("deeper & warmer"). Don't swap these for eyeballed values -- the green and
+   gold are his, measured at pixel level.
+   ========================================================================== */
+
+:root{
+  --green:      #141F11;   /* tuned from the measured #1C2D17 */
+  --green-mid:  #1C2D17;   /* his literal value, used for depth against --green */
+  --green-soft: #2C4324;
+  --gold:       #C9992F;   /* tuned from the measured #D9B240 */
+  --gold-lift:  #E0B24A;   /* hover / focus */
+  --bg:         #F7F3EA;
+  --bg-2:       #EBE3D4;
+  --paper:      #FFFFFF;
+  --ink:        #14120E;
+  --ink-soft:   #55503f;
+  --line:       #ddd4c2;
+
+  --head: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --hdr-h: 66px;
+  --wrap: 1200px;
+  --r: 10px;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+
+html{
+  /* clip, NOT hidden -- overflow-x:hidden on html/body kills position:sticky
+     in Chromium and the header silently stops sticking. */
+  overflow-x: clip;
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce){ html{ scroll-behavior:auto; } }
+
+body{
+  margin:0;
+  overflow-x: clip;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+
+img,svg,video{ max-width:100%; display:block; }
+a{ color:inherit; }
+
+h1,h2,h3,h4{ font-family:var(--head); font-weight:700; letter-spacing:-.02em; line-height:1.12; margin:0; }
+p{ margin:0; }
+
+.container{
+  width:100%;
+  max-width:var(--wrap);
+  margin-left:auto; margin-right:auto;
+  padding-left:22px; padding-right:22px;
+}
+/* NEVER write `padding: Xpx 0` on anything that shares specificity with
+   .container -- the shorthand quietly zeroes the horizontal padding above and
+   every section goes edge-to-edge on mobile. Vertical only, always. */
+.section{ padding-top:clamp(56px,8vw,104px); padding-bottom:clamp(56px,8vw,104px); }
+.section--tight{ padding-top:clamp(40px,5vw,64px); padding-bottom:clamp(40px,5vw,64px); }
+
+.eyebrow{
+  font-family:var(--head); font-size:11px; font-weight:600;
+  letter-spacing:.24em; text-transform:uppercase; color:var(--gold);
+  margin-bottom:14px;
+}
+.rule{ height:2px; width:56px; background:var(--gold); margin-top:18px; margin-bottom:22px; }
+.lede{ font-size:clamp(16px,1.9vw,18px); color:var(--ink-soft); max-width:62ch; }
+.h-xl{ font-size:clamp(32px,6vw,60px); }
+.h-lg{ font-size:clamp(27px,4.2vw,44px); }
+.h-md{ font-size:clamp(20px,2.6vw,27px); }
+
+/* ---------- brand wordmark ---------------------------------------------- */
+/* Route B: the script is a real vector trace of his wordmark; KENYA is live
+   type so its tracking stays optically even at every size. */
+/* KENYA is absolutely placed against the traced script's own geometry. In his
+   artwork it doesn't sit *below* the script, it tucks up into the whitespace
+   under the P, level with the descender tails -- so stacking it underneath
+   with a margin reads as two separate things. The percentages below are the
+   measured position out of the 535x145 trace: x 246-336, y 106-128.
+   `font-size` on .wordmark--* is set equal to the mark's pixel WIDTH, which is
+   what makes these em values scale with it. */
+.wordmark{ position:relative; display:block; line-height:0; }
+.wordmark svg{ width:100%; height:auto; display:block; }
+.wordmark .kenya{
+  position:absolute; left:46%; top:70%;
+  font-family:var(--head); font-weight:600;
+  letter-spacing:.44em; text-indent:.44em;
+  font-size:.046em; line-height:1; white-space:nowrap;
+}
+.wordmark--sm{ width:172px; font-size:172px; }
+.wordmark--md{ width:280px; font-size:280px; }
+.wordmark--lg{ width:min(420px,72vw); font-size:min(420px,72vw); }
+
+/* ---------- preload splash ---------------------------------------------- */
+#splash{
+  position:fixed; inset:0; z-index:120;
+  background:var(--green);
+  display:grid; place-items:center;
+  transition:opacity .5s ease, visibility .5s ease;
+}
+#splash .wordmark{ color:var(--bg); opacity:0; animation:splashIn .7s ease forwards; }
+#splash .kenya{ color:var(--gold); }
+@keyframes splashIn{ to{ opacity:1; } }
+html.splash-done #splash{ opacity:0; visibility:hidden; pointer-events:none; }
+/* No JS? Never see it. The splash only ever exists because the script adds it. */
+@media (prefers-reduced-motion: reduce){
+  #splash{ transition:none; }
+  #splash .wordmark{ animation:none; opacity:1; }
+}
+
+/* ---------- header ------------------------------------------------------- */
+.site-header{
+  position:sticky; top:0; z-index:60;
+  /* Deliberately NO backdrop-filter. It creates a containing block that breaks
+     the fixed-position mobile nav panel in Chromium. Solid colour + z-index. */
+  background:var(--green);
+  border-bottom:1px solid rgba(201,153,47,.22);
+  transform:translateY(0);
+  transition:transform .28s ease;
+}
+.site-header.is-hidden{ transform:translateY(-102%); }
+@media (prefers-reduced-motion: reduce){ .site-header{ transition:none; } }
+
+.header-inner{
+  min-height:var(--hdr-h);
+  display:flex; align-items:center; justify-content:space-between; gap:18px;
+  min-width:0;
+}
+.brand{ color:var(--bg); text-decoration:none; flex:0 1 auto; min-width:0; }
+.brand .kenya{ color:var(--gold); }
+
+.nav{ display:flex; align-items:center; gap:26px; }
+.nav a{
+  font-family:var(--head); font-size:12px; font-weight:600;
+  letter-spacing:.13em; text-transform:uppercase;
+  color:#d9dcd2; text-decoration:none; padding-top:6px; padding-bottom:6px;
+  border-bottom:1.5px solid transparent;
+}
+.nav a:hover, .nav a:focus-visible{ color:var(--gold-lift); }
+.nav a[aria-current="page"]{ color:var(--gold); border-bottom-color:var(--gold); }
+
+.header-cta{ display:flex; align-items:center; gap:10px; }
+.nav-toggle{
+  display:none; width:44px; height:44px; border:0; border-radius:8px;
+  background:transparent; color:var(--bg); cursor:pointer;
+  align-items:center; justify-content:center;
+}
+.nav-toggle span{ display:block; width:20px; height:2px; background:currentColor; position:relative; }
+.nav-toggle span::before,.nav-toggle span::after{
+  content:''; position:absolute; left:0; width:20px; height:2px; background:currentColor;
+}
+.nav-toggle span::before{ top:-6px; }
+.nav-toggle span::after{ top:6px; }
+
+@media (max-width:900px){
+  .nav-toggle{ display:flex; }
+  .nav{
+    position:fixed; inset:var(--hdr-h) 0 auto 0;
+    background:var(--green);
+    flex-direction:column; align-items:stretch; gap:0;
+    padding-top:10px; padding-bottom:26px;
+    border-bottom:1px solid rgba(201,153,47,.25);
+    transform:translateY(-8px); opacity:0; visibility:hidden;
+    transition:opacity .2s ease, transform .2s ease, visibility .2s;
+  }
+  .nav.is-open{ transform:translateY(0); opacity:1; visibility:visible; }
+  .nav a{
+    padding-top:15px; padding-bottom:15px;
+    padding-left:22px; padding-right:22px;
+    border-bottom:1px solid rgba(255,255,255,.07); font-size:13px;
+  }
+  .nav a[aria-current="page"]{ border-bottom-color:rgba(255,255,255,.07); }
+  .header-cta .btn--ghost{ display:none; }
+  .header-inner{ gap:12px; }
+  .brand .wordmark--sm{ width:150px; font-size:150px; }
+}
+/* At 390 the fixed-width wordmark plus a labelled WhatsApp button plus the
+   burger add up to more than the container, and the button gets clipped off
+   the right edge. Shrink the mark and drop the button's text label. */
+@media (max-width:430px){
+  .brand .wordmark--sm{ width:124px; font-size:124px; }
+  .header-cta{ gap:6px; }
+  .header-cta .btn--wa span{ display:none; }
+  .header-cta .btn--wa{ padding-left:13px; padding-right:13px; }
+}
+
+/* ---------- buttons ------------------------------------------------------ */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:9px;
+  font-family:var(--head); font-size:13.5px; font-weight:600; letter-spacing:.02em;
+  padding-top:13px; padding-bottom:13px; padding-left:22px; padding-right:22px;
+  border-radius:999px; border:1.5px solid transparent;
+  text-decoration:none; cursor:pointer; transition:background .18s, color .18s, border-color .18s;
+}
+.btn svg{ width:18px; height:18px; flex:0 0 auto; }
+.btn--wa{ background:var(--gold); color:var(--green); }
+.btn--wa:hover,.btn--wa:focus-visible{ background:var(--gold-lift); }
+.btn--call{ background:transparent; color:var(--bg); border-color:rgba(255,255,255,.4); }
+.btn--call:hover,.btn--call:focus-visible{ border-color:var(--gold); color:var(--gold-lift); }
+.btn--ghost{ background:transparent; color:var(--green); border-color:var(--green); }
+.btn--ghost:hover,.btn--ghost:focus-visible{ background:var(--green); color:var(--bg); }
+.btn--solid{ background:var(--green); color:var(--bg); }
+.btn--solid:hover,.btn--solid:focus-visible{ background:var(--green-mid); color:var(--gold-lift); }
+.btn--sm{ padding-top:10px; padding-bottom:10px; padding-left:16px; padding-right:16px; font-size:12px; }
+
+:focus-visible{ outline:2px solid var(--gold-lift); outline-offset:3px; }
+
+/* ---------- floating WhatsApp ------------------------------------------- */
+/* His green and gold, never WhatsApp's own #25D366. Glyph stays recognisable. */
+.wa-float{
+  position:fixed; right:18px; bottom:18px; z-index:70;
+  width:56px; height:56px; border-radius:50%;
+  background:var(--green); color:var(--gold);
+  border:2px solid var(--gold);
+  display:grid; place-items:center; text-decoration:none;
+  box-shadow:0 10px 26px rgba(20,31,17,.34);
+  transition:transform .18s ease, background .18s ease;
+}
+.wa-float svg{ width:28px; height:28px; }
+.wa-float:hover,.wa-float:focus-visible{ transform:translateY(-3px); background:var(--green-mid); }
+@media (prefers-reduced-motion: reduce){ .wa-float{ transition:none; } .wa-float:hover{ transform:none; } }
+@media (min-width:900px){ .wa-float{ right:26px; bottom:26px; } }
+
+/* ---------- hero --------------------------------------------------------- */
+.hero{ position:relative; background:var(--green); color:var(--bg); overflow:hidden; }
+.hero-media{ position:absolute; inset:0; }
+.hero-media img{ width:100%; height:100%; object-fit:cover; object-position:center 28%; }
+.hero-media::after{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(20,31,17,.72) 0%, rgba(20,31,17,.48) 42%, rgba(20,31,17,.88) 100%);
+}
+.hero-inner{
+  position:relative; z-index:1;
+  min-height:clamp(520px,86svh,780px);
+  display:flex; flex-direction:column; justify-content:flex-end;
+  padding-top:clamp(96px,16vw,150px); padding-bottom:clamp(46px,7vw,74px);
+}
+.hero h1{ max-width:17ch; }
+.hero .lede{ color:#e4e2d8; margin-top:20px; }
+.hero-actions{ display:flex; flex-wrap:wrap; gap:12px; margin-top:30px; }
+
+/* ---------- stat strip (social proof -- follower counts, nothing invented) */
+.stats{ background:var(--green-mid); color:var(--bg); }
+.stats .container{ padding-top:26px; padding-bottom:26px; }
+.stats-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(0,1fr)); gap:20px; text-align:center; }
+.stat b{ display:block; font-family:var(--head); font-size:clamp(22px,3.4vw,32px); font-weight:800; color:var(--gold); line-height:1.1; }
+.stat span{ font-size:11px; letter-spacing:.17em; text-transform:uppercase; color:#c3c8ba; }
+
+/* ---------- grids -------------------------------------------------------- */
+/* minmax(0,1fr) everywhere. A plain 1fr track refuses to shrink below its
+   content's min-width and the whole grid blows out sideways on mobile. */
+.grid{ display:grid; gap:16px; grid-template-columns:repeat(2,minmax(0,1fr)); }
+@media (min-width:760px){ .grid--3{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media (min-width:760px){ .grid--4{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
+@media (max-width:520px){ .grid--1s{ grid-template-columns:minmax(0,1fr); } }
+
+/* padding-top percentage wrapper. Do NOT put aspect-ratio on the <img>: inside
+   CSS grid it loses to the width/height HTML attributes and the tiles jump. */
+/* display:block is load-bearing -- these wrappers are <span>s (they sit inside
+   <a>), and padding-top on an inline box generates no layout height at all, so
+   without it every tile in the grid collapses to nothing. */
+.ph{ display:block; position:relative; width:100%; overflow:hidden; border-radius:var(--r); background:var(--bg-2); }
+.ph > img{ position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; }
+.ph--45{ padding-top:125%; }   /* 4:5  */
+.ph--11{ padding-top:100%; }   /* 1:1  */
+.ph--32{ padding-top:66.66%; } /* 3:2  */
+.ph--23{ padding-top:150%; }   /* 2:3  */
+
+.tile{ text-decoration:none; color:inherit; display:block; }
+.tile .ph > img{ transition:transform .5s ease; }
+.tile:hover .ph > img,.tile:focus-visible .ph > img{ transform:scale(1.04); }
+@media (prefers-reduced-motion: reduce){ .tile .ph > img{ transition:none; } .tile:hover .ph > img{ transform:none; } }
+
+/* service card */
+.svc{ position:relative; border-radius:var(--r); overflow:hidden; display:block; text-decoration:none; color:var(--bg); }
+.svc .ph{ border-radius:0; }
+.svc-body{
+  position:absolute; left:0; right:0; bottom:0;
+  padding-top:64px; padding-bottom:18px; padding-left:18px; padding-right:18px;
+  /* deep enough that the gold number and the blurb still read over a bright
+     frame -- the magenta and yellow portraits were washing them out */
+  background:linear-gradient(180deg, rgba(20,31,17,0) 0%, rgba(20,31,17,.58) 42%, rgba(20,31,17,.95) 100%);
+}
+.svc-body h3{ font-size:17px; }
+.svc-body p{ font-size:12.5px; color:#d3d6c9; margin-top:4px; }
+/* No photo exists in his files for these two yet, so they're type-only panels.
+   display:flex makes them stretch to the height of the image cards beside them
+   instead of leaving a ragged bottom edge on the last row. */
+.svc--noimg{ background:var(--green); color:var(--bg); display:flex; }
+.svc--noimg .svc-inner{ flex:1 1 auto; padding-top:26px; padding-bottom:26px; padding-left:20px; padding-right:20px; min-height:190px; display:flex; flex-direction:column; justify-content:flex-end; }
+.svc--noimg h3{ font-size:17px; color:var(--bg); }
+.svc--noimg p{ font-size:12.5px; color:#bcc2b2; margin-top:6px; }
+.svc-num{ font-family:var(--head); font-size:11px; font-weight:700; letter-spacing:.2em; color:var(--gold); }
+
+/* ---------- panels ------------------------------------------------------- */
+.panel-green{ background:var(--green); color:var(--bg); }
+.panel-green .lede{ color:#cfd3c6; }
+.panel-green h2{ color:var(--bg); }
+.panel-warm{ background:var(--bg-2); }
+
+.quote{ font-family:var(--head); font-weight:600; font-size:clamp(20px,3vw,31px); line-height:1.35; max-width:22ch; }
+.quote-attrib{ font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--gold); margin-top:18px; }
+
+.split{ display:grid; gap:clamp(28px,5vw,60px); grid-template-columns:minmax(0,1fr); align-items:center; }
+@media (min-width:900px){ .split{ grid-template-columns:minmax(0,1fr) minmax(0,1fr); } }
+@media (min-width:900px){ .split--wide-left{ grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); } }
+/* Centring is right when both halves are roughly equal. Where one column is a
+   long form and the other a short list, centring floats the form down the page
+   away from its own heading -- top-align those. */
+.split--top{ align-items:start; }
+
+/* ---------- about: the owner pair --------------------------------------- */
+/* Two frames of Nick in the same forest, offset and overlapping, with a
+   staggered reveal. Not two images side by side. */
+.owner-pair{ position:relative; padding-bottom:clamp(40px,9vw,88px); }
+.owner-pair .op{ border-radius:var(--r); overflow:hidden; box-shadow:0 18px 46px rgba(20,31,17,.20); }
+.owner-pair .op img{ width:100%; height:auto; }
+.owner-pair .op-1{ width:70%; }
+.owner-pair .op-2{
+  width:52%; position:absolute; right:0; bottom:0;
+  border:7px solid var(--bg);
+}
+@media (min-width:760px){
+  .owner-pair .op-1{ width:62%; }
+  .owner-pair .op-2{ width:46%; bottom:0; }
+}
+.owner-pair::before{
+  content:''; position:absolute; left:-14px; top:-14px; width:120px; height:120px;
+  border-left:2px solid var(--gold); border-top:2px solid var(--gold); border-radius:4px;
+}
+
+/* ---------- video -------------------------------------------------------- */
+.vid{ position:relative; border-radius:var(--r); overflow:hidden; background:var(--green); }
+.vid video{ width:100%; height:auto; display:block; }
+.vid--portrait{ max-width:340px; }
+.sound-toggle{
+  position:absolute; right:12px; bottom:12px; z-index:2;
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--green); color:var(--gold); border:1.5px solid var(--gold);
+  border-radius:999px; cursor:pointer;
+  padding-top:9px; padding-bottom:9px; padding-left:14px; padding-right:14px;
+  font-family:var(--head); font-size:11.5px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+}
+.sound-toggle:hover,.sound-toggle:focus-visible{ background:var(--green-mid); color:var(--gold-lift); }
+.sound-toggle svg{ width:15px; height:15px; }
+.vid-cap{ font-size:13px; color:var(--ink-soft); margin-top:14px; max-width:46ch; }
+
+/* ---------- gallery ------------------------------------------------------ */
+.filters{ display:flex; flex-wrap:wrap; gap:9px; margin-bottom:28px; }
+.filter{
+  font-family:var(--head); font-size:12px; font-weight:600; letter-spacing:.09em;
+  padding-top:9px; padding-bottom:9px; padding-left:16px; padding-right:16px;
+  border-radius:999px; border:1.5px solid var(--line); background:transparent;
+  color:var(--ink-soft); cursor:pointer; transition:background .16s,color .16s,border-color .16s;
+}
+.filter:hover{ border-color:var(--green); color:var(--green); }
+.filter[aria-pressed="true"]{ background:var(--green); border-color:var(--green); color:var(--bg); }
+.filter .n{ opacity:.6; margin-left:6px; font-size:11px; }
+
+.gal{ display:grid; gap:14px; grid-template-columns:repeat(2,minmax(0,1fr)); }
+@media (min-width:700px){ .gal{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media (min-width:1050px){ .gal{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
+.gal-item[hidden]{ display:none; }
+.gal-item button{
+  display:block; width:100%; padding:0; border:0; background:transparent; cursor:zoom-in;
+  border-radius:var(--r); overflow:hidden;
+}
+.gal-empty{ padding-top:40px; padding-bottom:40px; color:var(--ink-soft); }
+
+/* ---------- lightbox ----------------------------------------------------- */
+.lb{
+  position:fixed; inset:0; z-index:110;
+  background:rgba(12,18,10,.96);
+  display:none; flex-direction:column;
+}
+.lb.is-open{ display:flex; }
+.lb-stage{ flex:1 1 auto; display:grid; place-items:center; min-height:0; padding:14px; }
+.lb-stage img{ max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; border-radius:6px; }
+.lb-bar{
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  padding-top:12px; padding-bottom:16px; padding-left:18px; padding-right:18px;
+  color:#e6e3d9;
+}
+.lb-cap{ font-size:13.5px; color:#d7d4c8; min-width:0; }
+.lb-count{ font-family:var(--head); font-size:11.5px; letter-spacing:.16em; color:var(--gold); margin-top:3px; }
+.lb-nav{ display:flex; gap:10px; flex:0 0 auto; }
+.lb-btn{
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(255,255,255,.07); border:1.5px solid rgba(201,153,47,.5);
+  color:var(--gold); cursor:pointer; display:grid; place-items:center;
+}
+.lb-btn:hover,.lb-btn:focus-visible{ background:var(--green-mid); color:var(--gold-lift); }
+.lb-close{ position:absolute; top:12px; right:12px; z-index:2; }
+
+/* ---------- photobooks --------------------------------------------------- */
+/* No album photo exists anywhere in his files, so this band is carried by type
+   and rules rather than an image. Swap in a real photo the moment he sends one. */
+.book{ background:var(--green); color:var(--bg); border-radius:var(--r); overflow:hidden; }
+.book-inner{ padding-top:clamp(36px,6vw,64px); padding-bottom:clamp(36px,6vw,64px); padding-left:clamp(24px,5vw,56px); padding-right:clamp(24px,5vw,56px); }
+.book-specs{ display:grid; gap:2px; grid-template-columns:minmax(0,1fr); margin-top:28px; border-top:1px solid rgba(201,153,47,.3); }
+@media (min-width:700px){ .book-specs{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:0; } }
+.book-spec{ padding-top:20px; padding-bottom:20px; border-bottom:1px solid rgba(255,255,255,.09); }
+@media (min-width:700px){ .book-spec{ padding-right:24px; } }
+.book-spec b{ display:block; font-family:var(--head); font-size:15px; color:var(--gold); }
+.book-spec span{ font-size:13px; color:#c2c7b8; }
+
+/* ---------- forms / booking --------------------------------------------- */
+.form{ display:grid; gap:16px; grid-template-columns:minmax(0,1fr); }
+@media (min-width:640px){ .form .two{ display:grid; gap:16px; grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.field label{
+  display:block; font-family:var(--head); font-size:11.5px; font-weight:600;
+  letter-spacing:.13em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:7px;
+}
+.field input,.field select,.field textarea{
+  width:100%; font-family:var(--body); font-size:15px; color:var(--ink);
+  background:var(--paper); border:1.5px solid var(--line); border-radius:8px;
+  padding-top:12px; padding-bottom:12px; padding-left:14px; padding-right:14px;
+}
+.field textarea{ min-height:118px; resize:vertical; }
+.field input:focus,.field select:focus,.field textarea:focus{ border-color:var(--gold); outline:none; }
+.form-actions{ display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+.form-note{ font-size:12.5px; color:var(--ink-soft); }
+
+.contact-list{ display:grid; gap:2px; grid-template-columns:minmax(0,1fr); }
+.contact-row{
+  display:flex; gap:14px; align-items:flex-start;
+  padding-top:18px; padding-bottom:18px; border-bottom:1px solid var(--line);
+  text-decoration:none;
+}
+.contact-row:last-child{ border-bottom:0; }
+.contact-row svg{ width:20px; height:20px; color:var(--gold); flex:0 0 auto; margin-top:3px; }
+.contact-row b{ display:block; font-family:var(--head); font-size:14px; }
+.contact-row span{ font-size:13.5px; color:var(--ink-soft); }
+
+.map{ position:relative; width:100%; padding-top:62%; border-radius:var(--r); overflow:hidden; background:var(--bg-2); }
+.map iframe{ position:absolute; top:0; left:0; width:100%; height:100%; border:0; }
+
+/* ---------- footer ------------------------------------------------------- */
+.site-footer{ background:var(--green); color:#c8cdbe; }
+.site-footer .container{ padding-top:56px; padding-bottom:34px; }
+.footer-grid{ display:grid; gap:34px; grid-template-columns:minmax(0,1fr); }
+@media (min-width:760px){ .footer-grid{ grid-template-columns:minmax(0,1.4fr) repeat(2,minmax(0,1fr)); } }
+.site-footer h4{ font-size:11.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); margin-bottom:14px; }
+.site-footer a{ color:#c8cdbe; text-decoration:none; }
+.site-footer a:hover,.site-footer a:focus-visible{ color:var(--gold-lift); }
+.footer-links{ display:grid; gap:9px; font-size:14px; }
+.footer-brand .wordmark{ color:var(--bg); }
+.footer-brand .kenya{ color:var(--gold); }
+.footer-brand p{ font-size:13.5px; margin-top:18px; max-width:36ch; }
+.socials{ display:flex; gap:12px; margin-top:18px; }
+.socials a{
+  width:40px; height:40px; border-radius:50%; display:grid; place-items:center;
+  border:1.5px solid rgba(201,153,47,.4); color:var(--gold);
+}
+.socials a:hover,.socials a:focus-visible{ background:var(--green-mid); color:var(--gold-lift); }
+.socials svg{ width:18px; height:18px; }
+.colophon{
+  margin-top:38px; padding-top:20px; border-top:1px solid rgba(255,255,255,.1);
+  display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between;
+  font-size:12px; color:#9aa392;
+}
+
+/* ---------- scroll reveal ------------------------------------------------ */
+/* Content is VISIBLE by default. JS adds .reveal-on to <html>, which is the
+   only thing that arms the hidden state -- so if the script dies, or never
+   runs, the page still reads normally. There's a 2.5s safety net in site.js
+   that force-reveals anything still hidden. */
+.reveal-on .reveal{ opacity:0; transform:translateY(18px); }
+.reveal-on .reveal.is-in{ opacity:1; transform:none; transition:opacity .7s ease, transform .7s ease; }
+.reveal-on .reveal.d1.is-in{ transition-delay:.10s; }
+.reveal-on .reveal.d2.is-in{ transition-delay:.20s; }
+.reveal-on .reveal.d3.is-in{ transition-delay:.30s; }
+@media (prefers-reduced-motion: reduce){
+  .reveal-on .reveal{ opacity:1 !important; transform:none !important; transition:none !important; }
+}
+
+.visually-hidden{
+  position:absolute; width:1px; height:1px; overflow:hidden;
+  clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap;
+}
+.skip-link{
+  position:absolute; left:-9999px; top:0; z-index:200;
+  background:var(--gold); color:var(--green); padding:12px 18px; border-radius:0 0 8px 0;
+  font-family:var(--head); font-weight:600; font-size:13px; text-decoration:none;
+}
+.skip-link:focus{ left:0; }
