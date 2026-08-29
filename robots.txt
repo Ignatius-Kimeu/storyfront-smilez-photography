@@ -1,0 +1,4 @@
+# Speculative demo build - not the client-approved live site.
+# Remove this file and the noindex meta tags when it goes live for real.
+User-agent: *
+Disallow: /
